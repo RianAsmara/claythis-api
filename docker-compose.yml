@@ -1,0 +1,48 @@
+services:
+  # app:
+  #   container_name: claythis-api-app
+  #   build: .
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #   restart: always
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 10s
+  #   networks:
+  #     - claythis-infra
+
+  database:
+    container_name: claythis-postgres-db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: claythis
+      POSTGRES_PASSWORD: secret123
+      POSTGRES_DB: claythis_db
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U claythis -d claythis_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - claythis-infra
+
+volumes:
+  postgres_data:
+
+networks:
+  claythis-infra:
+    driver: bridge
