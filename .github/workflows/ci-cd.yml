@@ -37,6 +37,8 @@ jobs:
         needs: test-and-build
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         runs-on: ubuntu-latest
+        env:
+            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
         steps:
             - uses: actions/checkout@v4
@@ -45,6 +47,6 @@ jobs:
               run: npm install -g @railway/cli
 
             - name: Deploy to Railway
-              run: railway up
-              env:
-                  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+              run: |
+                  railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+                  railway up --detach
